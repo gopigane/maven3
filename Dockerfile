@@ -1,4 +1,4 @@
-FROM tomcat:latest
+FROM tomcat
 MAINTAINER ganesh
 RUN apt-get update -y
 WORKDIR /usr/local/tomcat
