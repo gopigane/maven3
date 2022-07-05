@@ -1,0 +1,28 @@
+version: 0.2
+
+phases:
+  install:
+    runtime-versions:
+      java: corretto11
+  pre_build:
+    commands:
+      - echo Nothing to do in the pre_build phase...
+	  - sudo apt-get update -y
+	  - sudo apt-get install docker.io -y
+	  - sudo systemctl start docker
+	  - sudo systemctl enable docker
+  build:
+    commands:
+      - echo Build started on `date`
+	  - git clone https://github.com/gopigane/maven3.git
+      - mvn clean install
+	  - docker build -t petclinic .
+      - docker tag petclinic:latest 605580347753.dkr.ecr.ap-south-1.amazonaws.com/petclinic:latest	  
+  post_build:
+    commands:
+      - echo Build completed on `date`
+	  - aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin 605580347753.dkr.ecr.ap-south-1.amazonaws.com
+	  - docker push 605580347753.dkr.ecr.ap-south-1.amazonaws.com/petclinic:latest
+artifacts:
+  files:
+    - target/*.jar
